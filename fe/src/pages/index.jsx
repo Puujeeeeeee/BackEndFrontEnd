@@ -6,26 +6,14 @@ export default function Home() {
   const [age, setAge] = useState("");
   const [data, setData] = useState([]);
   const [gender, setGender] = useState("");
-  const [editedName, setEditedName] = useState("");
-  const [editedAge, setEditedAge] = useState("");
-  const [editedGender, setEditedGender] = useState("");
+  const [deleteData, setDeleteData] = useState([]);
+  const API_ENDPOINT = "http://localhost:3002";
 
-  // Function to handle editing
-  const handleEdit = (id, name, age, gender) => {
-    // Populate the edited values with existing data
-    setEditedName(name);
-    setEditedAge(age);
-    setEditedGender(gender);
-
-    // Now you can display the edit form and allow the user to modify the data
-  };
-  // Create new data entry
   const createData = async () => {
     try {
-      const response = await fetch("http://localhost:3002", {
+      const response = await fetch(API_ENDPOINT, {
         method: "POST",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, age, gender }),
@@ -37,36 +25,24 @@ export default function Home() {
     }
   };
 
-  // Delete data entry
-  // Update the handleDelete function to send a DELETE request
-  const handleDelete = async (name) => {
+  const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3002/${name}`, {
+      const response = await fetch(`${API_ENDPOINT},${id}`, {
         method: "DELETE",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
       });
     } catch (error) {
       console.error("Error deleting data:", error);
     }
   };
-  // const handleEdit = (id, name, age, gender) => {
-  //   // Populate the edited values with existing data
-  //   setEditedName(name);
-  //   setEditedAge(age);
-  //   setEditedGender(gender);
 
-  //   // Now you can display the edit form and allow the user to modify the data
-  // };
   const submitEdit = async () => {
     try {
-      const response = await fetch(`http://localhost:3002/${id}`, {
+      const response = await fetch(`${API_ENDPOINT},${id}`, {
         method: "PUT",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -75,16 +51,11 @@ export default function Home() {
           gender: editedGender,
         }),
       });
-      // Handle response and update data if needed
     } catch (error) {
       console.error("Error editing data:", error);
     }
   };
-  
 
-  // Fetch initial data on component mount
-
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     await createData(); // Create new data
@@ -94,10 +65,12 @@ export default function Home() {
     <div>
       {/* <Hero> */}
       <div className="flex justify-center items-center bg-gray-500 ">
-        <div className="w-[1000px] h-[1560px] border border-black bg-gray-300 flex flex-col items-center justify-evenly ">
+        <div className="w-[1000px] h-[1300px] border border-black bg-gray-300 flex flex-col items-center justify-evenly ">
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col  w-[850px] h-[200px] shadow-xl border border-black gap-[20px] p-[30px] rounded-md items-center">
-              <h1 className="text-2xl">FORM</h1>
+              <h1 className="text-2xl border p-1 rounded-md border-white text-white">
+                FORM
+              </h1>
               <div className="gap-[30px] flex">
                 <input
                   className="border rounded-md border-black p-2"
@@ -136,22 +109,19 @@ export default function Home() {
               {/* user information */}
               <div className="gap-[10px] flex justify-center items-center  flex-col">
                 <div className="flex w-[800px] h-[50px] border-4 border-white bg-blue-400 shadow-xl rounded-lg justify-center items-center ">
-                  <p className="border-4 rounded-md border-white p-2 text-white">
+                  <p className="border-2 rounded-md border-white p-2 text-white">
                     USER'S INFORMATION
                   </p>
                 </div>
-                <div className=" flex w-[796px] h-[100px]   bg-blue-400 border-4 border-white rounded-lg shadow-xl justify-center items-center">
-                  <div className="items-center flex justify-center  gap-[12px] text-white ">
-                    <p className="items-center flex justify-center w-[100px] h-[80px]  border-4 border-white bg-red-300 text-2xl font-bold">
-                      №
-                    </p>
-                    <p className="items-center flex justify-center w-[220px] h-[80px] border-4 border-white bg-red-300 text-2xl font-bold">
+                <div className=" flex w-[796px] h-[100px] p-8  bg-blue-400 border-4 border-white rounded-lg shadow-xl justify-center items-center">
+                  <div className="items-center flex justify-center  gap-[12px] text-white m-5  ">
+                    <p className="items-center flex justify-center w-[220px] h-[80px] border-2 border-white bg-red-300 text-2xl ">
                       NAME
                     </p>
-                    <p className="  items-center flex justify-center w-[220px] h-[80px] border-4 border-white bg-red-300 text-2xl font-bold">
+                    <p className="  items-center flex justify-center w-[220px] h-[80px] border-2 border-white bg-red-300 text-2xl">
                       AGE
                     </p>
-                    <p className="w-[220px] h-[80px] items-center flex justify-center border-4 border-white bg-red-300 text-2xl font-bold">
+                    <p className="w-[220px] h-[80px] items-center flex justify-center border-2 border-white bg-red-300 text-2xl">
                       GENDER
                     </p>
                   </div>
@@ -160,14 +130,11 @@ export default function Home() {
               {/* data avj bgaa heseg */}
 
               <div className="flex items-center justify-center ">
-                <div className="container w-[810px] h-[850px] border-white  overflow-x-scroll border-4 ">
+                <div className="container w-[810px] h-[800px] border-white  overflow-x-scroll border-2 ">
                   {data.map((element) => (
                     <div key={element.id} className="flex flex-col ">
                       <div className=" flex w-[800px] h-[150px]   bg-blue-400 border-2  border-black flex-col  gap-[20px] rounded-2xl shadow-xl justify-center items-center">
                         <div className="items-center flex justify-center  gap-[12px] text-white p-2">
-                          <p className="items-center flex justify-center w-[100px] h-[50px]  border-2 bg-red-300">
-                            №
-                          </p>
                           <p className="items-center flex justify-center w-[220px] h-[50px]  border-2 bg-red-300">
                             {element.name}
                           </p>
@@ -181,14 +148,16 @@ export default function Home() {
                         <div className="flex gap-[50px]">
                           <button
                             className="text-center w-[130px] shadow-xl text-white rounded-md hover:bg-slate-200 hover:duration-500 hover:text-black h-[30px] border-2"
+                            onClick={() => handleEdit(element.id)}
+                          >
+                            EDIT
+                          </button>
+
+                          <button
+                            className="text-center w-[130px] text-white shadow-xl rounded-md hover:bg-slate-200  hover:duration-500 hover:text-black h-[30px] border-2 "
                             onClick={() => handleDelete(element.id)}
                           >
                             DELETE
-                          </button>
-
-                          <button className="text-center w-[130px] text-white shadow-xl rounded-md hover:bg-slate-200  hover:duration-500 hover:text-black h-[30px] border-2 "
-                                    onClick={() => handleEdit(element.id)}>
-                            EDIT
                           </button>
                         </div>
                       </div>
@@ -204,3 +173,15 @@ export default function Home() {
     </div>
   );
 }
+// const [editedName, setEditedName] = useState("");
+// const [editedAge, setEditedAge] = useState("");
+// const [editedGender, setEditedGender] = useState("");
+
+// const handleEdit = (id, name, age, gender) => {
+//   // Populate the edited values with existing data
+//   setEditedName(name);
+//   setEditedAge(age);
+//   setEditedGender(gender);
+
+//
+// };
