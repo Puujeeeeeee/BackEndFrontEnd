@@ -25,16 +25,26 @@ app.post("/", (req, res) => {
 app.get("/", (req, res) => {
   res.send(arr);
 });
-
 app.delete("/:name", (req, res) => {
-  const { id } = req.params;
-  arr = arr.filter((item) => item.id !== parseInt(id));
-  fs.writeFileSync("db.json", JSON.stringify(arr));
-  res.send(arr);
+  const name = req.params.name;
+
+  try {
+    let data = fs.readFileSync("db.json");
+    let jsonData = JSON.parse(data);
+
+    // Filter the data to exclude the item with the specified name
+    let filteredData = jsonData.filter((item) => item.name !== name);
+
+    fs.writeFileSync("db.json", JSON.stringify(filteredData));
+    res.json(filteredData);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
 
 // import express from "express";

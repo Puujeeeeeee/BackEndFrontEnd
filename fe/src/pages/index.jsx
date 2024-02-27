@@ -2,27 +2,26 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Hero from "@/Components/Hero";
 export default function Home() {
+  const API_ENDPOINT = "http://localhost:3002";
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [data, setData] = useState([]);
   const [gender, setGender] = useState("");
-  const [editedName, setEditedName] = useState("");
-  const [editedAge, setEditedAge] = useState("");
-  const [editedGender, setEditedGender] = useState("");
 
-  // Function to handle editing
+  const isSubmtDisable = name === "" || age === "" || gender === "";
+
   const handleEdit = (id, name, age, gender) => {
-    // Populate the edited values with existing data
+   
     setEditedName(name);
     setEditedAge(age);
     setEditedGender(gender);
 
-    // Now you can display the edit form and allow the user to modify the data
+  
   };
-  // Create new data entry
+ 
   const createData = async () => {
     try {
-      const response = await fetch("http://localhost:3002", {
+      const response = await fetch(API_ENDPOINT, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -37,57 +36,55 @@ export default function Home() {
     }
   };
 
-  // Delete data entry
-  // Update the handleDelete function to send a DELETE request
-  const handleDelete = async (name) => {
+  const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3002/${name}`, {
+      const res = await fetch(`${API_ENDPOINT}${id}`, {
+      
         method: "DELETE",
         headers: {
-          Accept: "application/json",
+       
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
+      
       });
+      
     } catch (error) {
       console.error("Error deleting data:", error);
     }
   };
-  // const handleEdit = (id, name, age, gender) => {
-  //   // Populate the edited values with existing data
-  //   setEditedName(name);
-  //   setEditedAge(age);
-  //   setEditedGender(gender);
 
-  //   // Now you can display the edit form and allow the user to modify the data
-  // };
-  const submitEdit = async () => {
+  const sendId = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3002/${id}`, {
+      await handleDelete(id);
+    } catch (error) {
+      console.error("Error sending ID:", error);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await createData();
+  };
+  async function updateUser() {
+    let item = { newName, newAge, newId };
+    try {
+      const response = await fetch(API_ENDPOINT, {
         method: "PUT",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: editedName,
-          age: editedAge,
-          gender: editedGender,
-        }),
+        body: JSON.stringify(item), // corrected syntax: body should be an object
       });
-      // Handle response and update data if needed
+      const data = await response.json();
+      setData(data);
     } catch (error) {
-      console.error("Error editing data:", error);
+      console.error("Error updating user:", error);
     }
-  };
-  
-
-  // Fetch initial data on component mount
-
-  // Handle form submission
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    await createData(); // Create new data
+  }
+  const addData = async () => {
+    await createData();
+    setName(""), setAge(""), setGender("");
   };
 
   return (
@@ -98,7 +95,7 @@ export default function Home() {
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col  w-[850px] h-[200px] shadow-xl border border-black gap-[20px] p-[30px] rounded-md items-center">
               <h1 className="text-2xl">FORM</h1>
-              <div className="gap-[30px] flex">
+              <div className="gap-[30px] flex ">
                 <input
                   className="border rounded-md border-black p-2"
                   type="text"
@@ -123,6 +120,7 @@ export default function Home() {
               </div>
 
               <button
+                disabled={isSubmtDisable}
                 type="submit"
                 className="w-[80px] bg-blue-400 text-white h-[30px] border rounded-md hover:scale-95 hover:duration-500 hover:blue-500 hover:text-black duration-500"
               >
@@ -181,13 +179,15 @@ export default function Home() {
                         <div className="flex gap-[50px]">
                           <button
                             className="text-center w-[130px] shadow-xl text-white rounded-md hover:bg-slate-200 hover:duration-500 hover:text-black h-[30px] border-2"
-                            onClick={() => handleDelete(element.id)}
+                            onClick={() => sendId(element.id)}
                           >
                             DELETE
                           </button>
 
-                          <button className="text-center w-[130px] text-white shadow-xl rounded-md hover:bg-slate-200  hover:duration-500 hover:text-black h-[30px] border-2 "
-                                    onClick={() => handleEdit(element.id)}>
+                          <button
+                            className="text-center w-[130px] text-white shadow-xl rounded-md hover:bg-slate-200  hover:duration-500 hover:text-black h-[30px] border-2"
+                            onClick={() => handleEdit(element)}
+                          >
                             EDIT
                           </button>
                         </div>
